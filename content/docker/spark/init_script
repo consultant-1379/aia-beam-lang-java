@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# **********************************************************************
+# Ericsson Radio Systems AB
+# **********************************************************************
+#
+# (c) Ericsson 2017 - All rights reserved.
+#
+# The copyright to the computer program(s) herein is the property of
+# Ericsson Radio Systems AB, Sweden. The programs may be used and/or
+# copied only with the written permission from Ericsson Radio Systems AB
+# or in accordance with the terms and conditions stipulated in the
+# agreement/contract under which the program(s) have been supplied.
+#
+# **********************************************************************
+
+#Read the configuration from config.properties file
+options=""
+while read line
+do
+    if echo $line | grep -F = &>/dev/null
+    then
+        name=$(echo "$line" | cut -d '=' -f 1)
+        value=$(echo "$line" | cut -d '=' -f 2-)
+        options="$options --$name=$value"
+    fi
+done < ${FLOW_CONFIGURATION}/config.properties
+
+echo spark-submit --class ${FLOW_MAIN_CLASS} --deploy-mode $DEPLOY_MODE --master $MASTER_URL ${FLOW_HOME}/${FLOW_JAR} --runner=SparkRunner $options
+spark-submit --class ${FLOW_MAIN_CLASS} --deploy-mode $DEPLOY_MODE --master $MASTER_URL ${FLOW_HOME}/${FLOW_JAR} --runner=SparkRunner $options
